@@ -19,6 +19,9 @@
                     <h6 style="margin-top:5px">Ticket Description</h6>
                     <input type="text" name="ticket_desc" class="form-control" placeholder="e.g Need a new feature for the UI"
                      style="margin-top: 5px; resize: none;">
+                    <h6 style="margin-top:5px;">Ticket Price</h6>
+                    <input type="number" name="ticket_cost" class="form-control" placeholder="e.g 20"
+                    style="margin-top: 5px; display: block;">
                     <h6 style="margin-top: 5px;">Ticket Client</h6>
                     <select name="ticket_client" class="form-control">
                         @foreach($clients as $cli)

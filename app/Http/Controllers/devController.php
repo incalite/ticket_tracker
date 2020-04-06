@@ -13,7 +13,7 @@ class devController extends Controller
         $sql = DB::select("SELECT * FROM developers");
         $result = json_decode(json_encode($sql), true);
         return view('devs')->with([
-            'developers' => $developers
+            'developers' => $result
         ]);
     }
 }

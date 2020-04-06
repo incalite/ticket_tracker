@@ -14,7 +14,10 @@
                     <h6>Ticket Title</h6>
                     <input type="text" name="title" class="form-control" value="{{ $current[0]['ticket_title'] }}">
                     <h6>Ticket Description</h6>
-                    <input name="description" name="desc" class="form-control" value="{{ $current[0]['ticket_desc'] }}">
+                    <input type="text" name="desc" class="form-control" value="{{ $current[0]['ticket_desc'] }}">
+                    <h6>Ticket Price</h6>
+                    <label style="font-weight: 600; margin:0 10px;">Estimated price: $<?= $estimate ?></label>
+                    <input type="number" name="price" class="form-control" value="{{ $current[0]['ticket_price'] }}">
                     <h6>Ticket Author</h6>
                     <input type="text" name="author" class="form-control" value="{{ $current[0]['ticket_author'] }}">
                     <h6>Ticket Assignment</h6>

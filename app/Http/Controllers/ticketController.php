@@ -7,15 +7,40 @@ use Illuminate\Support\Facades\DB;
 
 class ticketController extends Controller
 {
+
+    public function byPass($str){
+        return (strlen($str) > 5) ? true : false;
+    }
+    public function estimateCost($ticket){
+        $price = 20.0;
+        $modifier = 2.5;
+        $empty = '-';
+        $desc = strtolower($ticket['ticket_desc']);
+        $wordPool = ['make', 'find', 'get', 'build', 'developer', 'modify', 'install', 'need', 
+                    'auth', 'login', 'logout', 'social', 'admin panel', 'panel', 'module', 'email',
+                    'plugin', 'installments', 'installs', 'client', 'form', 'register',
+                    'sign', 'logged', 'signed', 'signed', 'subscribe', 'subscription'];
+        $mark_desc = strlen($desc); 
+        $words = explode(' ', $desc);  
+        foreach($words as $wd){
+            $wrds[] = (strlen($wd) >= 3) ? $wd : $empty;
+        }
+        foreach($wrds as $word){
+            $price = (in_array($word, $wordPool)) ? $price + ($price * $modifier * $mark_desc) / ($price * 10) : $price;
+        }
+        return $price;
+    }
     public function getTicket($id){
         $ticket = DB::select('SELECT * FROM tickets WHERE ticket_id = ' . $id);
         $current = json_decode(json_encode($ticket), true);
         $client = $current[0]['client_id'];
         $info = DB::select('SELECT * FROM clients WHERE client_id = ' . $client);
+        $estimated = $this->estimateCost($current[0]);
         $clientInfo = json_decode(json_encode($info), true);
         return view('ticket')->with([
             'current' => $current,
-            'client' => $clientInfo
+            'client' => $clientInfo,
+            'estimate' => $estimated
         ]);
     }
 
@@ -24,11 +49,12 @@ class ticketController extends Controller
         $id = $data['id'];
         DB::table('tickets')->where('ticket_id', $id)->update([
             'ticket_title' => $data['title'],
-            'ticket_desc' => $data['description'],
+            'ticket_desc' => $data['desc'],
             'ticket_author' => $data['author'],
             'ticket_deadline' => $data['deadline'],
             'ticket_priority' => $data['priority'],
-            'ticket_status' => $data['status']
+            'ticket_status' => $data['status'],
+            'ticket_price' => $data['price']
         ]);
         
         return redirect('/ticket/edit/'.$id); 
@@ -39,7 +65,6 @@ class ticketController extends Controller
         $ticketID = $data['id'];
         $ticketInfo = DB::select('SELECT * FROM tickets WHERE ticket_id = ' . $ticketID);
         $ticketInfo = json_decode(json_encode($ticketInfo), true);
-        print_r($ticketInfo);
         $exists = DB::select('SELECT ticket_id FROM ticket_logs WHERE ticket_id = '. $ticketID);
         if (empty($exists)){
             DB::table('ticket_logs')->insert([
@@ -47,6 +72,7 @@ class ticketController extends Controller
                 'ticket_deadline' => $ticketInfo[0]['ticket_deadline'],
                 'ticket_title' => $ticketInfo[0]['ticket_title'],
                 'ticket_client' => $ticketInfo[0]['client_id'],
+                'ticket_price' => $ticketInfo[0]['ticket_price'],
                 'ticket_id' => $ticketInfo[0]['ticket_id']
             ]);
         }
@@ -66,6 +92,7 @@ class ticketController extends Controller
             'description' => (!empty($data['ticket_desc'])) ? $data['ticket_desc'] : '',
             'assigned' => (!empty($data['ticket_assign'])) ? $data['ticket_assign'] : '',
             'deadline' => (!empty($data['ticket_deadline'])) ? $data['ticket_deadline'] : '',
+            'price' => (!empty($data['ticket_price'])) ? $data['ticket_price'] : '',
             'type' => (!empty($data['ticket_type'])) ? $data['ticket_type'] : '',
             'status' => (!empty($data['ticket_status'])) ? $data['ticket_status'] : '',
             'client' => (!empty($data['ticket_client'])) ? $data['ticket_client'] : 0
@@ -81,6 +108,7 @@ class ticketController extends Controller
                 'ticket_deadline' => $ticket[0]['deadline'],
                 'ticket_priority' => $ticket[0]['type'],
                 'ticket_status' => $ticket[0]['status'],
+                'ticket_price' => $ticket[0]['price'],
                 'client_id' => $ticket[0]['client']
             ]);
         }
