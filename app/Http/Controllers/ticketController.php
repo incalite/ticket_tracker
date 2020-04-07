@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\DB;
 class ticketController extends Controller
 {
 
-    public function byPass($str){
-        return (strlen($str) > 5) ? true : false;
-    }
     public function estimateCost($ticket){
         $price = 20.0;
         $modifier = 2.5;
@@ -92,7 +89,7 @@ class ticketController extends Controller
             'description' => (!empty($data['ticket_desc'])) ? $data['ticket_desc'] : '',
             'assigned' => (!empty($data['ticket_assign'])) ? $data['ticket_assign'] : '',
             'deadline' => (!empty($data['ticket_deadline'])) ? $data['ticket_deadline'] : '',
-            'price' => (!empty($data['ticket_price'])) ? $data['ticket_price'] : '',
+            'price' => (!empty($data['ticket_cost'])) ? $data['ticket_cost'] : '',
             'type' => (!empty($data['ticket_type'])) ? $data['ticket_type'] : '',
             'status' => (!empty($data['ticket_status'])) ? $data['ticket_status'] : '',
             'client' => (!empty($data['ticket_client'])) ? $data['ticket_client'] : 0
@@ -100,7 +97,17 @@ class ticketController extends Controller
 
         if (!empty($ticket[0]['title']) && !empty($ticket[0]['author']) && !empty($ticket[0]['description']) &&
             !empty($ticket[0]['assigned']) && !empty($ticket[0]['type']) && !empty($ticket[0]['status'])){
-            DB::table('tickets')->insert([
+
+                $ticketCount = DB::select("SELECT dev_tickets FROM developers WHERE dev_name = '" . $ticket[0]['assigned'] . "'");
+                $count = json_decode(json_encode($ticketCount), true);
+                $count = $count[0]['dev_tickets'];
+                $count++;
+                DB::table('developers')
+                    ->where('dev_name', $ticket[0]['assigned'])
+                    ->update([ 'dev_tickets' => $count ]);
+
+                  
+                DB::table('tickets')->insert([
                 'ticket_title' => $ticket[0]['title'],
                 'ticket_desc' => $ticket[0]['description'],    
                 'ticket_author' => $ticket[0]['author'],

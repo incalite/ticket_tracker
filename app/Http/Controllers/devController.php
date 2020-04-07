@@ -7,8 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class devController extends Controller
 {
-
-    
+  
     public function devs(){
         $sql = DB::select("SELECT * FROM developers");
         $result = json_decode(json_encode($sql), true);
@@ -16,4 +15,7 @@ class devController extends Controller
             'developers' => $result
         ]);
     }
+
+
+
 }
