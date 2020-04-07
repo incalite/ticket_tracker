@@ -7,6 +7,7 @@ Supports the following services:
 - [x] User Experience Principles
 - [x] Ticket Generation & Ticket Monitoring 
 - [x] Client Manager & Ticket Sychronization
+- [x] Developers' Table & Ticket Counter
 
 More to be added soon.
 
