@@ -11,6 +11,4 @@ Supports the following services:
 
 More to be added soon.
 
-> Author: George Zafiris - http://georgezafiris.com
-
     
